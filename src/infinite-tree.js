@@ -80,13 +80,15 @@ class InfiniteTree extends events.EventEmitter {
         noDataClass: 'infinite-tree-no-data',
         noDataText: 'No data',
         nodeIdAttr: 'data-id',
-        togglerClass: 'infinite-tree-toggler'
+        togglerClass: 'infinite-tree-toggler',
+        iconUrl: null
     };
 
     state = {
         openNodes: [],
         rootNode: createRootNode(),
-        selectedNode: null
+        selectedNode: null,
+        checkNodes: []
     };
 
     clusterize = null;
@@ -485,7 +487,7 @@ class InfiniteTree extends events.EventEmitter {
         index = parentNode.children.indexOf(newNodes[0]);
 
         const deleteCount = parentNode.state.total;
-        const nodes = flatten(parentNode.children, { openNodes: this.state.openNodes });
+        const nodes = flatten(parentNode.children, { openNodes: this.state.openNodes, checkNodes: this.state.checkNodes });
         const rows = [];
         // Update rows
         rows.length = nodes.length;
@@ -650,6 +652,8 @@ class InfiniteTree extends events.EventEmitter {
         updateChildNodes(node);
         updateParentNodes(node);
 
+        this.state.checkNodes = this.nodes.filter((node) => node.state.checked);
+
         this.updateNode(topmostNode);
 
         // Emit a "checkNode" event
@@ -669,6 +673,7 @@ class InfiniteTree extends events.EventEmitter {
         this.state.openNodes = [];
         this.state.rootNode = createRootNode(this.state.rootNode);
         this.state.selectedNode = null;
+        this.state.checkNodes = [];
     }
 
     // Closes a node to hide its children.
@@ -1001,6 +1006,13 @@ class InfiniteTree extends events.EventEmitter {
         return this.nodes.indexOf(this.state.selectedNode);
     }
 
+    // Gets an array of checked nodes.
+    // @return {array} Returns an array of Node objects containing checked nodes.
+    getCheckNodes() {
+        // returns a shallow copy of an array into a new array object.
+        return this.state.checkNodes.slice();
+    }
+
     // Inserts the specified node after the reference node.
     // @param {object} newNode The new sibling node.
     // @param {Node} referenceNode The Node object that defines the reference node.
@@ -1035,14 +1047,45 @@ class InfiniteTree extends events.EventEmitter {
 
     // Loads data in the tree.
     // @param {object|array} data The data is an object or array of objects that defines the node.
-    loadData(data = []) {
-        this.nodes = flatten(data, { openAllNodes: this.options.autoOpen });
+    loadData(data = [], remainState = {}) {
+        this._data = data; //sunshan
+        // this.nodes = flatten(data, { openAllNodes: this.options.autoOpen });
+        //sunshan modify
+        const remainOpenstate = remainState.open || false;
+        const remainSelectedstate = remainState.selected || false;
+        if ((remainOpenstate) && (this.state.openNodes.length > 0)) {
+            let openNodesIdArr = [];
+            for (let n of this.state.openNodes) {
+                openNodesIdArr.push(n.id);
+            }
+            this.nodes = flatten(data, { openNodes: openNodesIdArr });
+        } else {
+            this.nodes = flatten(data, { openAllNodes: this.options.autoOpen });
+        }
+        //end sunshan
 
         // Clear lookup table
         this.nodeTable.clear();
 
         this.state.openNodes = this.nodes.filter((node) => node.state.open);
-        this.state.selectedNode = null;
+
+        this.state.checkNodes = this.nodes.filter((node) => node.state.checked);
+
+        //this.state.selectedNode = null;
+        //sunshan modify
+        if ((remainSelectedstate) && (this.state.selectedNode)) {
+            const lastSelectedId = this.state.selectedNode.id;
+            const matchNode = this.getNodeById(lastSelectedId);
+            if (matchNode) {
+                this.state.selectedNode = matchNode;
+                matchNode.state.selected = true;
+            } else {
+                this.state.selectedNode = null;
+            }
+        } else {
+            this.state.selectedNode = null;
+        }
+        //end sunshan
 
         const rootNode = ((node = null) => {
             // Finding the root node
@@ -1362,9 +1405,13 @@ class InfiniteTree extends events.EventEmitter {
             this.rows[parentNodeIndex] = this.options.rowRenderer(parentNode, this.options);
         }
 
-        { // Update open nodes and lookup table
+        { // Update open & checked nodes and lookup table
             this.state.openNodes = this.state.openNodes.filter((node) => {
                 return (removedNodes.indexOf(node) < 0) && node.state.open;
+            });
+
+            this.state.checkNodes = this.state.checkNodes.filter((node) => {
+                return (removedNodes.indexOf(node) < 0) && node.state.checked;
             });
 
             removedNodes.forEach((node) => {
@@ -1451,9 +1498,13 @@ class InfiniteTree extends events.EventEmitter {
             this.rows[parentNodeIndex] = this.options.rowRenderer(parentNode, this.options);
         }
 
-        { // Update open nodes and lookup table
+        { // Update open & checked nodes and lookup table
             this.state.openNodes = this.state.openNodes.filter((node) => {
                 return (removedNodes.indexOf(node) < 0) && node.state.open;
+            });
+
+            this.state.checkNodes = this.state.checkNodes.filter((node) => {
+                return (removedNodes.indexOf(node) < 0) && node.state.checked;
             });
 
             removedNodes.forEach((node) => {

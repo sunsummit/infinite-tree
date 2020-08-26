@@ -1,9 +1,57 @@
+@import 'nib';
+
 .infinite-tree {
+    color:#ffffff;
 }
 .infinite-tree-scroll {
     overflow: auto;
     max-height: 400px; /* Change the height to suit your needs. */
 }
+
+
+//滚动条整体部分
+.infinite-tree-scroll::-webkit-scrollbar {
+   width: 16px;
+   background-color: #3C4253;
+}
+//滚动条的轨道
+.infinite-tree-scroll::-webkit-scrollbar-track {
+    background-color: #3C4253;
+}
+//滚动条里面的小方块
+.infinite-tree-scroll::-webkit-scrollbar-thumb {
+    background-color: #646874;
+    border:1px solid #232837;
+}
+//滚动条的轨道的两端按钮
+.infinite-tree-scroll::-webkit-scrollbar-button:vertical:start {
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAIAAAC0D9CtAAAABnRSTlMAAAAAAABupgeRAAAAMklEQVR4nGNgGAU4wf///3FJMeLXwMiIRQEWITQbMLWh87E6CU0bCgefH7A5chTQHAAAUQUPAl2sjXUAAAAASUVORK5CYII=");
+    background-size: 17px 17px;
+}
+.infinite-tree-scroll::-webkit-scrollbar-button:vertical:end {
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAIAAAC0D9CtAAAABnRSTlMAAAAAAABupgeRAAAANUlEQVR4nGNgGAX0AozInP///+NUx4hQyYgmh1UbsgYsejC1oWnArgdZG6YGfACP30YBAwMAO4MPAmQqBUQAAAAASUVORK5CYII=");
+    background-size: 17px 17px;
+}
+.infinite-tree-scroll::-webkit-scrollbar-button:horizontal:start {
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAIAAAC0D9CtAAAABnRSTlMAAAAAAABupgeRAAAAOElEQVR4nGNgGDng////WMWZSNWAUw8eDdj14NeARQ9BDVj0MDIykqyHGG3Yw4AY27ADYvw2HAAA6EISBqg5edUAAAAASUVORK5CYII=");
+    background-size: 17px 17px;
+}
+.infinite-tree-scroll::-webkit-scrollbar-button:horizontal:end {
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAIAAAC0D9CtAAAABnRSTlMAAAAAAABupgeRAAAAN0lEQVR4nGNgGAng////eGSZyNCGUw8ebfj04NJGQA9WbYT1MDIykqYHUwMBPVg14AT442e4AQCgHhIGov6JWgAAAABJRU5ErkJggg==");
+    background-size: 17px 17px;
+}
+//内层轨道，滚动条中间部分
+.infinite-tree-scroll::-webkit-scrollbar-track-piece {
+}
+//边角
+.infinite-tree-scroll::-webkit-scrollbar-corner {
+    background-color: #3c4253;
+    background-size: 12px 12px;
+}
+//拖动调整元素大小的小控件
+.infinite-tree-scroll::-webkit-resizer{
+}
+
 .infinite-tree-table {
     width: 100%;
 }
@@ -14,15 +62,19 @@
 
     .infinite-tree-selected.infinite-tree-item,
     .infinite-tree-selected.infinite-tree-item:hover {
-        background: #deecfd;
-        border: 1px solid #0066cc;
+        text-shadow: none;
+        background-color: #007ACC;
+        -moz-background-clip: padding;
+        background-clip: padding-box;
+        -webkit-background-clip: padding-box;
+        //border: 1px; solid transparent;
     }
     .infinite-tree-item {
         border: 1px solid transparent;
         cursor: default;
     }
     .infinite-tree-item:hover {
-        background: #f2fdff;
+        background-color: #1c97ea;
     }
     .infinite-tree-item:disabled,
     .infinite-tree-item[disabled] {
@@ -31,18 +83,53 @@
     }
     .infinite-tree-node {
         position: relative;
+        padding: 3px 3px 3px 3px;
+        //
+        display: flex;
+        display: -webkit-flex;
+        flex-wrap: nowrap;
+        align-items: flex-start;
     }
     .infinite-tree-toggler {
-        color: #666;
         user-select: none;
+        content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAIAAAC0D9CtAAAABnRSTlMAAAAAAABupgeRAAAANUlEQVR4nGNgGAX0AozInP///+NUx4hQyYgmh1UbsgYsejC1oWnArgdZG6YGfACP30YBAwMAO4MPAmQqBUQAAAAASUVORK5CYII=");
+        margin-bottom: -4px;
     }
     .infinite-tree-toggler:hover {
         color: #333;
         text-decoration: none;
     }
+    .infinite-tree-closed{
+        content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAIAAAC0D9CtAAAABnRSTlMAAAAAAABupgeRAAAAN0lEQVR4nGNgGAng////eGSZyNCGUw8ebfj04NJGQA9WbYT1MDIykqYHUwMBPVg14AT442e4AQCgHhIGov6JWgAAAABJRU5ErkJggg==");
+    }
     .infinite-tree-title {
         cursor: pointer;
         user-select: none;
+        white-space: nowrap;//
+    }
+    .infinite-tree-item-icon{
+
+    }
+    input[type="checkbox"]{
+        border-radius: 0px;
+        appearance:none;
+        -webkit-appearance:none;
+        -moz-appearance:none;
+        width: 14px;
+        height: 14px;
+        cursor:pointer;
+        position: relative;
+        top: 2px;
+        background-color: transparent;
+        border: 1px solid #232837;
+    }
+    input[type="checkbox"]:indeterminate{
+        background-color: #eceff1;
+    }
+    input[type="checkbox"]:checked {
+        background: 0px 0px no-repeat url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAg0lEQVR42sXSuw0CMRCEYZfgDqAESrgCCAgpgL4ogRIogULGnr+EJfEFFpx56BDBZvtptKNNEZG+mfRzCOSPIZCBs+3r27Chi+2wfQO2HQR2kqYXKHeJQLaN7ZjxCHWJpZRDWwpJ+xF6uFHSNOMRelpOrfXUEEtosVXbR2Dz389ZDd4B9rtZF2WB4LEAAAAASUVORK5CYII=");
+        background-color: transparent;
+        background-size:100% 100%;
     }
 }
 // centering message that appears when no data provided

@@ -11,12 +11,12 @@ const plugins = [
 const USE_TERSER_PLUGIN = (env.BUILD_ENV === 'dist');
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',//'development',
     entry: path.resolve(__dirname, 'lib/index.js'),
     output: {
         path: path.join(__dirname, 'dist'),
         filename: env.BUILD_ENV === 'dist' ? 'infinite-tree.min.js' : 'infinite-tree.js',
-        libraryTarget: 'umd',
+        libraryTarget: 'var',//'umd',
         library: 'InfiniteTree'
     },
     optimization: {
